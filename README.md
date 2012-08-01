@@ -6,6 +6,7 @@ Script to make a proxy (ie HAProxy) capable of monitoring Percona XtraDB Cluster
 Below is a sample configuration for HAProxy on the client. The point of this is that the application will be able to connect to localhost port 3307, so although we are using Percona XtraDB Cluster with several nodes, the application will see this as a single MySQL server running on localhost.
 
 `/etc/haproxy/haproxy.cfg`
+
     ...
     listen percona-cluster 0.0.0.0:3307
       balance leastconn
@@ -25,6 +26,7 @@ First, create a clustercheckuser that will be doing the checks.
 Copy the script to a location (`/usr/bin` in the example below) and make it executable. Then add the following service to xinetd (make sure to match your location of the script with the 'server'-entry).
 
 `/etc/xinetd.d/mysqlchk`
+
     # default: on
     # description: mysqlchk
     service mysqlchk
