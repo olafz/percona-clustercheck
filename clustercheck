@@ -10,7 +10,7 @@
 
 MYSQL_USERNAME="clustercheckuser" 
 MYSQL_PASSWORD="clustercheckpassword!" 
-ERR_FILE="/tmp/clustercheck.err" 
+ERR_FILE="/dev/null" 
 
 #
 # Perform the query to check the wsrep_local_state
