@@ -19,13 +19,15 @@ Below is a sample configuration for HAProxy on the client. The point of this is 
 MySQL connectivity is checked via HTTP on port 9200. The clustercheck script is a simple shell script which accepts HTTP requests and checks MySQL on an incoming request. If the Percona XtraDB Cluster node is ready to accept requests, it will respond with HTTP code 200 (OK), otherwise a HTTP error 503 (Service Unavailable) is returned.
 
 ## Setup ##
+This setup will create a process that listens on TCP port 9200 using xinetd. This process uses the clustercheck script from this repository to report the status of the node.
+
 First, create a clustercheckuser that will be doing the checks.
 
     mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY 'clustercheckpassword!'
 
-Copy the script to a location (`/usr/bin` in the example below) and make it executable. Then add the following service to xinetd (make sure to match your location of the script with the 'server'-entry).
+Copy the clustercheck from the repository to a location (`/usr/bin` in the example below) and make it executable. Then add the following service to xinetd (make sure to match your location of the script with the 'server'-entry).
 
-`/etc/xinetd.d/mysqlchk`
+`/etc/xinetd.d/mysqlchk`:
 
     # default: on
     # description: mysqlchk
@@ -50,3 +52,4 @@ Also, you should add the mysqlchk service to `/etc/services` before restarting x
     git         9418/tcp    # Git Version Control System
     zope        9673/tcp    # ...
 
+Clustercheck will now listen on port 9200 after xinetd restart, and HAproxy is ready to check MySQL via HTTP poort 9200.
