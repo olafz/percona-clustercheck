@@ -53,3 +53,10 @@ Also, you should add the mysqlchk service to `/etc/services` before restarting x
     zope        9673/tcp    # ...
 
 Clustercheck will now listen on port 9200 after xinetd restart, and HAproxy is ready to check MySQL via HTTP poort 9200.
+
+## Options ##
+The clustercheck script contains a couple of variables and options.
+
+- **MYSQL_USERNAME** and **MYSQL_PASSWORD**: defines the username and password for the check
+- **ERR_FILE** (default "/dev/null"): defines where errors from the checks should go
+- **AVAILABLE_WHEN_DONOR** (default 0): By default, the node is reported unavailable if it’s a donor for SST. If you want to allow queries on a node which is a donor for SST, you can set this variable to 1. Note: when you set this variable to 1, you will also need to use a non-blocking SST method like xtrabackup

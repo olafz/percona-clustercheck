@@ -11,13 +11,14 @@
 MYSQL_USERNAME="clustercheckuser" 
 MYSQL_PASSWORD="clustercheckpassword!" 
 ERR_FILE="/dev/null" 
+AVAILABLE_WHEN_DONOR=0
 
 #
 # Perform the query to check the wsrep_local_state
 #
 WSREP_STATUS=`mysql --user=${MYSQL_USERNAME} --password=${MYSQL_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_local_state';" 2>${ERR_FILE} | awk '{if (NR!=1){print $2}}' 2>${ERR_FILE}` 
  
-if [ "$WSREP_STATUS" == "4" ]
+if [[ "${WSREP_STATUS}" == "4" ]] || [[ "${WSREP_STATUS}" == "2" && ${AVAILABLE_WHEN_DONOR} == 1 ]]
 then 
     # Percona XtraDB Cluster node local state is 'Synced' => return HTTP 200
     /bin/echo -en "HTTP/1.1 200 OK\r\n" 
