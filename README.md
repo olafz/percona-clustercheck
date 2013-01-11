@@ -58,11 +58,13 @@ Clustercheck will now listen on port 9200 after xinetd restart, and HAproxy is r
 If you do not want to use the setup with xinetd, you can also execute `clustercheck` on the commandline and check for the return value.
 
 In case of a synced node:
+
     # /usr/bin/clustercheck > /dev/null
     # echo $?
     0
 
 In case of an un-synced node:
+
     # /usr/bin/clustercheck > /dev/null
     # echo $?
     1
