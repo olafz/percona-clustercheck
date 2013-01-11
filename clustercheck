@@ -21,18 +21,20 @@ WSREP_STATUS=`mysql --user=${MYSQL_USERNAME} --password=${MYSQL_PASSWORD} -e "SH
 if [[ "${WSREP_STATUS}" == "4" ]] || [[ "${WSREP_STATUS}" == "2" && ${AVAILABLE_WHEN_DONOR} == 1 ]]
 then 
     # Percona XtraDB Cluster node local state is 'Synced' => return HTTP 200
+    # Shell return-code is 0
     /bin/echo -en "HTTP/1.1 200 OK\r\n" 
     /bin/echo -en "Content-Type: text/plain\r\n" 
     /bin/echo -en "\r\n" 
     /bin/echo -en "Percona XtraDB Cluster Node is synced.\r\n" 
     /bin/echo -en "\r\n" 
-	exit 0
+    exit 0
 else 
     # Percona XtraDB Cluster node local state is not 'Synced' => return HTTP 503
+    # Shell return-code is 1
     /bin/echo -en "HTTP/1.1 503 Service Unavailable\r\n" 
     /bin/echo -en "Content-Type: text/plain\r\n" 
     /bin/echo -en "\r\n" 
     /bin/echo -en "Percona XtraDB Cluster Node is not synced.\r\n" 
     /bin/echo -en "\r\n" 
-	exit 1
+    exit 1
 fi 
