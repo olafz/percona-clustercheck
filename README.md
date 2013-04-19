@@ -74,7 +74,7 @@ You can use this return value with monitoring tools like Zabbix or Zenoss.
 ## Configuration options ##
 The clustercheck script accepts several arguments:
 
-    clustercheck_new <user> <pass> <available_when_donor=0|1> <log_file>
+    clustercheck <user> <pass> <available_when_donor=0|1> <log_file>
 
 - **user** and **pass** (default clustercheckuser and clustercheckpassword!): defines the username and password for the check. You can pass an empty username and/or password by supplying ""
 - **available_when_donor** (default 0): By default, the node is reported unavailable if it’s a donor for SST. If you want to allow queries on a node which is a donor for SST, you can set this variable to 1. Note: when you set this variable to 1, you will also need to use a non-blocking SST method like xtrabackup
