@@ -71,9 +71,11 @@ In case of an un-synced node:
 
 You can use this return value with monitoring tools like Zabbix or Zenoss.
 
-## Options ##
-The clustercheck script contains a couple of variables and options.
+## Configuration options ##
+The clustercheck script accepts several arguments:
 
-- **MYSQL_USERNAME** and **MYSQL_PASSWORD**: defines the username and password for the check
-- **ERR_FILE** (default "/dev/null"): defines where errors from the checks should go
-- **AVAILABLE_WHEN_DONOR** (default 0): By default, the node is reported unavailable if it’s a donor for SST. If you want to allow queries on a node which is a donor for SST, you can set this variable to 1. Note: when you set this variable to 1, you will also need to use a non-blocking SST method like xtrabackup
+    clustercheck_new <user> <pass> <available_when_donor=0|1> <log_file>
+
+- **user** and **pass** (default clustercheckuser and clustercheckpassword!): defines the username and password for the check. You can pass an empty username and/or password by supplying ""
+- **available_when_donor** (default 0): By default, the node is reported unavailable if it’s a donor for SST. If you want to allow queries on a node which is a donor for SST, you can set this variable to 1. Note: when you set this variable to 1, you will also need to use a non-blocking SST method like xtrabackup
+- **log_file** (default "/dev/null"): defines where logs and errors from the checks should go
