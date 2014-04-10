@@ -57,7 +57,11 @@ Clustercheck will now listen on port 9200 after xinetd restart, and HAproxy is r
 ## Setup with shell return values ##
 If you do not want to use the setup with xinetd, you can also execute `clustercheck` on the commandline and check for the return value.
 
-In case of a synced node:
+First, create a clustercheckuser that will be doing the checks.
+
+    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY 'clustercheckpassword!'
+
+Then, you can execute the script. In case of a synced node:
 
     # /usr/bin/clustercheck > /dev/null
     # echo $?
@@ -79,3 +83,6 @@ The clustercheck script accepts several arguments:
 - **user** and **pass** (default clustercheckuser and clustercheckpassword!): defines the username and password for the check. You can pass an empty username and/or password by supplying ""
 - **available_when_donor** (default 0): By default, the node is reported unavailable if it’s a donor for SST. If you want to allow queries on a node which is a donor for SST, you can set this variable to 1. Note: when you set this variable to 1, you will also need to use a non-blocking SST method like xtrabackup
 - **log_file** (default "/dev/null"): defines where logs and errors from the checks should go
+- **available_when_readonly** (default 1): Depending on this setting and the MySQL status variable 'read_only', the node is reported available
+- **defaults_extra_file** (default /etc/my.cnf): This file (if exists) will be passed to the mysql-command with the commandline option --defaults-extra-file
+
