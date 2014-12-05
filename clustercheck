@@ -15,6 +15,20 @@ if [[ $1 == '-h' || $1 == '--help' ]];then
     exit
 fi
 
+# if the disabled file is present, return 503. This allows
+# admins to manually remove a node from a cluster easily.
+if [ -e "/var/run/clustercheck.disabled" ]; then
+    # Shell return-code is 1
+    echo -en "HTTP/1.1 503 Service Unavailable\r\n"
+    echo -en "Content-Type: text/plain\r\n"
+    echo -en "Connection: close\r\n"
+    echo -en "Content-Length: 51\r\n"
+    echo -en "\r\n"
+    echo -en "Percona XtraDB Cluster Node is manually disabled.\r\n"
+    sleep 0.1
+    exit 1
+fi
+
 MYSQL_USERNAME="${1-clustercheckuser}"
 MYSQL_PASSWORD="${2-clustercheckpassword!}"
 AVAILABLE_WHEN_DONOR=${3:-0}
