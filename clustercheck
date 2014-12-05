@@ -17,7 +17,7 @@ fi
 
 # if the disabled file is present, return 503. This allows
 # admins to manually remove a node from a cluster easily.
-if [ -e "/var/run/clustercheck.disabled" ]; then
+if [ -e "/var/tmp/clustercheck.disabled" ]; then
     # Shell return-code is 1
     echo -en "HTTP/1.1 503 Service Unavailable\r\n"
     echo -en "Content-Type: text/plain\r\n"

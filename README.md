@@ -90,4 +90,4 @@ Note: You can also specify the username and password for the check in the **defa
 
 ## Manually removing a node from the cluster ##
 
-By touching /var/run/clustercheck.disabled, an admin may force clustercheck to return 503, regardless as to the actual state of the node. This is useful when the node is being put into maintenance mode.
+By touching /var/tmp/clustercheck.disabled, an admin may force clustercheck to return 503, regardless as to the actual state of the node. This is useful when the node is being put into maintenance mode.
