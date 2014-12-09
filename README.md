@@ -87,3 +87,7 @@ The clustercheck script accepts several arguments:
 - **defaults_extra_file** (default /etc/my.cnf): This file (if exists) will be passed to the mysql-command with the commandline option --defaults-extra-file
 
 Note: You can also specify the username and password for the check in the **defaults_extra_file** and pass empty values for **user** and **pass**. That way, nobody can see the username and password (which can otherwise be seen, since they are passed to the MySQL CLI)
+
+## Manually removing a node from the cluster ##
+
+By touching /var/tmp/clustercheck.disabled, an admin may force clustercheck to return 503, regardless as to the actual state of the node. This is useful when the node is being put into maintenance mode.
