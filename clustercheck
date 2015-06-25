@@ -32,6 +32,7 @@ fi
 MYSQL_USERNAME="${1-clustercheckuser}"
 MYSQL_PASSWORD="${2-clustercheckpassword!}"
 AVAILABLE_WHEN_DONOR=${3:-0}
+MYSQL_CMD=mysql
 ERR_FILE="${4:-/dev/null}"
 AVAILABLE_WHEN_READONLY=${5:-1}
 DEFAULTS_EXTRA_FILE=${6:-/etc/my.cnf}
@@ -47,7 +48,7 @@ if [[ -n "$MYSQL_PASSWORD" ]]; then
     EXTRA_ARGS="$EXTRA_ARGS --password=${MYSQL_PASSWORD}"
 fi
 if [[ -r $DEFAULTS_EXTRA_FILE ]];then
-    MYSQL_CMDLINE="mysql --defaults-extra-file=$DEFAULTS_EXTRA_FILE -nNE --connect-timeout=$TIMEOUT \
+    MYSQL_CMDLINE="MYSQL_CMD --defaults-extra-file=$DEFAULTS_EXTRA_FILE -nNE --connect-timeout=$TIMEOUT \
                     ${EXTRA_ARGS}"
 else
     MYSQL_CMDLINE="mysql -nNE --connect-timeout=$TIMEOUT ${EXTRA_ARGS}"
@@ -56,7 +57,39 @@ fi
 # Perform the query to check the wsrep_local_state
 #
 WSREP_STATUS=$($MYSQL_CMDLINE -e "SHOW STATUS LIKE 'wsrep_local_state';" \
-    2>${ERR_FILE} | tail -1 2>>${ERR_FILE})
+    2>${ERR_FILE} | tail -1 2>>${ERR_FILE}; exit ${PIPESTATUS[0]})
+mysql_ret=$?
+
+if [[ $mysql_ret -eq 1 ]]; then
+
+# hash or command can be used here, but command is POSIX
+command -v "$MYSQL_CMD"; mysql_ret=$?
+if [[ $mysql_ret -eq 1 ]]; then
+            # mysql program not found
+            # => return HTTP 404
+            # Shell return-code is 3
+            echo -en "HTTP/1.1 404 Not Found\r\n"
+            echo -en "Content-Type: text/plain\r\n"
+            echo -en "Connection: close\r\n"
+            echo -en "Content-Length: 26\r\n"
+            echo -en "\r\n"
+            echo -en "Mysql command not found.\r\n"
+            sleep 0.1
+            exit 3
+fi
+
+            # Failed mysql login
+            # => return HTTP 401
+            # Shell return-code is 2
+            echo -en "HTTP/1.1 401 Unauthorized\r\n"
+            echo -en "Content-Type: text/plain\r\n"
+            echo -en "Connection: close\r\n"
+            echo -en "Content-Length: 28\r\n"
+            echo -en "\r\n"
+            echo -en "Access denied to database.\r\n"
+            sleep 0.1
+            exit 2
+fi
 
 if [[ "${WSREP_STATUS}" == "4" ]] || [[ "${WSREP_STATUS}" == "2" && ${AVAILABLE_WHEN_DONOR} == 1 ]]
 then
