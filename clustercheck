@@ -51,7 +51,7 @@ if [[ -r $DEFAULTS_EXTRA_FILE ]];then
     MYSQL_CMDLINE="$MYSQL_CMD --defaults-extra-file=$DEFAULTS_EXTRA_FILE -nNE --connect-timeout=$TIMEOUT \
                     ${EXTRA_ARGS}"
 else
-    MYSQL_CMDLINE="mysql -nNE --connect-timeout=$TIMEOUT ${EXTRA_ARGS}"
+    MYSQL_CMDLINE="$MYSQL_CMD -nNE --connect-timeout=$TIMEOUT ${EXTRA_ARGS}"
 fi
 #
 # Perform the query to check the wsrep_local_state
@@ -61,10 +61,9 @@ WSREP_STATUS=$($MYSQL_CMDLINE -e "SHOW STATUS LIKE 'wsrep_local_state';" \
 mysql_ret=$?
 
 if [[ $mysql_ret -eq 1 ]]; then
-
-# hash or command can be used here, but command is POSIX
-command -v "$MYSQL_CMD"; mysql_ret=$?
-if [[ $mysql_ret -eq 1 ]]; then
+    # hash or command can be used here, but command is POSIX
+    command -v "$MYSQL_CMD"; mysql_ret=$?
+    if [[ $mysql_ret -eq 1 ]]; then
             # mysql program not found
             # => return HTTP 404
             # Shell return-code is 3
@@ -76,19 +75,19 @@ if [[ $mysql_ret -eq 1 ]]; then
             echo -en "Mysql command not found.\r\n"
             sleep 0.1
             exit 3
-fi
+    fi
 
-            # Failed mysql login
-            # => return HTTP 401
-            # Shell return-code is 2
-            echo -en "HTTP/1.1 401 Unauthorized\r\n"
-            echo -en "Content-Type: text/plain\r\n"
-            echo -en "Connection: close\r\n"
-            echo -en "Content-Length: 28\r\n"
-            echo -en "\r\n"
-            echo -en "Access denied to database.\r\n"
-            sleep 0.1
-            exit 2
+        # Failed mysql login
+        # => return HTTP 401
+        # Shell return-code is 2
+        echo -en "HTTP/1.1 401 Unauthorized\r\n"
+        echo -en "Content-Type: text/plain\r\n"
+        echo -en "Connection: close\r\n"
+        echo -en "Content-Length: 28\r\n"
+        echo -en "\r\n"
+        echo -en "Access denied to database.\r\n"
+        sleep 0.1
+        exit 2
 fi
 
 if [[ "${WSREP_STATUS}" == "4" ]] || [[ "${WSREP_STATUS}" == "2" && ${AVAILABLE_WHEN_DONOR} == 1 ]]
