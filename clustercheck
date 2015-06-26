@@ -60,7 +60,7 @@ WSREP_STATUS=$($MYSQL_CMDLINE -e "SHOW STATUS LIKE 'wsrep_local_state';" \
     2>${ERR_FILE} | tail -1 2>>${ERR_FILE}; exit ${PIPESTATUS[0]})
 mysql_ret=$?
 
-if [[ $mysql_ret -eq 1 ]]; then
+if [[ $mysql_ret -eq 1 || $mysql_ret -eq 127 ]]; then
     # hash or command can be used here, but command is POSIX
     command -v "$MYSQL_CMD"; mysql_ret=$?
     if [[ $mysql_ret -eq 1 ]]; then
