@@ -11,7 +11,7 @@
 #
 
 if [[ $1 == '-h' || $1 == '--help' ]];then
-    echo "Usage: $0 <user> <pass> <available_when_donor=0|1> <log_file> <available_when_readonly=0|1> <defaults_extra_file>"
+    echo "Usage: $0 <user> <pass> <available_when_donor=0|1> <log_file> <available_when_readonly=0|1> <defaults_extra_file> <timeout>"
     exit
 fi
 
@@ -35,9 +35,9 @@ AVAILABLE_WHEN_DONOR=${3:-0}
 ERR_FILE="${4:-/dev/null}"
 AVAILABLE_WHEN_READONLY=${5:-1}
 DEFAULTS_EXTRA_FILE=${6:-/etc/my.cnf}
-
-#Timeout exists for instances where mysqld may be hung
-TIMEOUT=10
+# Timeout exists for instances where mysqld may be hung
+# Default value	considers the Galera timeouts
+TIMEOUT=${7:-18}
 
 EXTRA_ARGS=""
 if [[ -n "$MYSQL_USERNAME" ]]; then
