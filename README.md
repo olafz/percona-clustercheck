@@ -54,6 +54,22 @@ Also, you should add the mysqlchk service to `/etc/services` before restarting x
 
 Clustercheck will now listen on port 9200 after xinetd restart, and HAproxy is ready to check MySQL via HTTP poort 9200.
 
+## Setup with systemd ##
+This setup will register a socket on TCP port 9200 and an associated instantiated service with systemd. Connections to the socket will be forwarded to the clustercheck script from this repository to report the status of the node.
+
+First, create a clustercheckuser that will be doing the checks.
+
+    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY 'clustercheckpassword!'
+
+Copy the clustercheck from the repository to `/usr/bin` and make it executable. Then copy the `mysqlck.socket` and `mysqlchk@.service` files (under `systemd`) in the repository to `/usr/lib/systemd/system` and make them world-readable.
+
+To activate the socket, run the following commands:
+
+    # systemctl enable mysqlchk.socket
+    # systemctl start mysqlchk.socket
+
+Systemd will now service requests to port 9200 with the clustercheck script, and HAproxy is ready to check MySQL via HTTP port 9200.
+
 ## Setup with shell return values ##
 If you do not want to use the setup with xinetd, you can also execute `clustercheck` on the commandline and check for the return value.
 
