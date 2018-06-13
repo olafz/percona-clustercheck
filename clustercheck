@@ -29,12 +29,18 @@ if [ -e "/var/tmp/clustercheck.disabled" ]; then
     exit 1
 fi
 
-MYSQL_USERNAME="${1-clustercheckuser}"
-MYSQL_PASSWORD="${2-clustercheckpassword!}"
-AVAILABLE_WHEN_DONOR=${3:-0}
-ERR_FILE="${4:-/dev/null}"
-AVAILABLE_WHEN_READONLY=${5:-1}
-DEFAULTS_EXTRA_FILE=${6:-/etc/my.cnf}
+set -e
+
+if [ -f /etc/sysconfig/clustercheck ]; then
+        . /etc/sysconfig/clustercheck
+fi
+
+MYSQL_USERNAME="${MYSQL_USERNAME:=-clustercheckuser}"
+MYSQL_PASSWORD="${MYSQL_PASSWORD-clustercheckpassword!}"
+AVAILABLE_WHEN_DONOR=${AVAILABLE_WHEN_DONOR:-0}
+ERR_FILE="${ERR_FILE:-/dev/null}"
+AVAILABLE_WHEN_READONLY=${AVAILABLE_WHEN_READONLY:-1}
+DEFAULTS_EXTRA_FILE=${DEFAULTS_EXTRA_FILE:-/etc/my.cnf}
 
 #Timeout exists for instances where mysqld may be hung
 TIMEOUT=10
