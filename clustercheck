@@ -10,6 +10,29 @@
 # Based on the original script from Unai Rodriguez
 #
 
+function httpReply(){
+    HTTP_STATUS="${1}"
+    RESPONSE_CONTENT="${2}"
+    CONTENT_LENGTH=$(echo $RESPONSE_CONTENT | wc -c)
+
+    if [[ "${HTTP_STATUS}" == "503" ]]
+    then
+        echo -en "HTTP/1.1 503 Service Unavailable\r\n"
+    elif [[ "${HTTP_STATUS}" == "200" ]]
+    then
+        echo -en "HTTP/1.1 200 OK\r\n"
+    else
+        echo -en "HTTP/1.1 ${HTTP_STATUS}\r\n"
+    fi
+
+    echo -en "Content-Type: text/plain\r\n"
+    echo -en "Connection: close\r\n"
+    echo -en "Content-Length: ${CONTENT_LENGTH}\r\n"
+    echo -en "\r\n"
+    echo -en "${RESPONSE_CONTENT}"
+    sleep 0.1
+}
+
 if [[ $1 == '-h' || $1 == '--help' ]];then
     echo "Usage: $0 <user> <pass> <available_when_donor=0|1> <log_file> <available_when_readonly=0|1> <defaults_extra_file>"
     exit
@@ -19,13 +42,7 @@ fi
 # admins to manually remove a node from a cluster easily.
 if [ -e "/var/tmp/clustercheck.disabled" ]; then
     # Shell return-code is 1
-    echo -en "HTTP/1.1 503 Service Unavailable\r\n"
-    echo -en "Content-Type: text/plain\r\n"
-    echo -en "Connection: close\r\n"
-    echo -en "Content-Length: 51\r\n"
-    echo -en "\r\n"
-    echo -en "Percona XtraDB Cluster Node is manually disabled.\r\n"
-    sleep 0.1
+    httpReply "503" "Percona XtraDB Cluster Node is manually disabled.\r\n"
     exit 1
 fi
 
@@ -76,35 +93,22 @@ then
             # read-only mode. The variable AVAILABLE_WHEN_READONLY is set to 0.
             # => return HTTP 503
             # Shell return-code is 1
-            echo -en "HTTP/1.1 503 Service Unavailable\r\n"
-            echo -en "Content-Type: text/plain\r\n"
-            echo -en "Connection: close\r\n"
-            echo -en "Content-Length: 43\r\n"
-            echo -en "\r\n"
-            echo -en "Percona XtraDB Cluster Node is read-only.\r\n"
-            sleep 0.1
+            httpReply "503" "Percona XtraDB Cluster Node is read-only.\r\n"
             exit 1
         fi
     fi
     # Percona XtraDB Cluster node local state is 'Synced' => return HTTP 200
     # Shell return-code is 0
-    echo -en "HTTP/1.1 200 OK\r\n"
-    echo -en "Content-Type: text/plain\r\n"
-    echo -en "Connection: close\r\n"
-    echo -en "Content-Length: 40\r\n"
-    echo -en "\r\n"
-    echo -en "Percona XtraDB Cluster Node is synced.\r\n"
-    sleep 0.1
+    httpReply "200" "Percona XtraDB Cluster Node is synced.\r\n"
     exit 0
 else
     # Percona XtraDB Cluster node local state is not 'Synced' => return HTTP 503
     # Shell return-code is 1
-    echo -en "HTTP/1.1 503 Service Unavailable\r\n"
-    echo -en "Content-Type: text/plain\r\n"
-    echo -en "Connection: close\r\n"
-    echo -en "Content-Length: 44\r\n"
-    echo -en "\r\n"
-    echo -en "Percona XtraDB Cluster Node is not synced.\r\n"
-    sleep 0.1
+    if [[ -z "${WSREP_STATUS}" ]]
+    then
+        httpReply "503" "Received empty reply from Percona XtraDB Cluster Node.\r\nMight be a permission issue, check the credentials used by ${0}\r\n"
+    else
+        httpReply "503" "Percona XtraDB Cluster Node is not synced.\r\n"
+    fi
     exit 1
 fi
