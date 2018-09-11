@@ -31,14 +31,14 @@ fi
 
 set -e
 
-if [ -f /etc/sysconfig/clustercheck ]; then
-        . /etc/sysconfig/clustercheck
+if [ -f /etc/sysconfig/healthcheck ]; then
+        . /etc/sysconfig/healthcheck
 fi
 
 MYSQL_USERNAME="${1-$MYSQL_USERNAME}"
-MYSQL_USERNAME="${MYSQL_USERNAME:-clustercheckuser}"
+MYSQL_USERNAME="${MYSQL_USERNAME:-healthcheckuser}"
 MYSQL_PASSWORD="${2-$MYSQL_PASSWORD}"
-MYSQL_PASSWORD="${MYSQL_PASSWORD-clustercheckpassword!}"
+MYSQL_PASSWORD="${MYSQL_PASSWORD-healthcheckpassword!}"
 AVAILABLE_WHEN_DONOR=${3-$AVAILABLE_WHEN_DONOR}
 AVAILABLE_WHEN_DONOR=${AVAILABLE_WHEN_DONOR:-0}
 ERR_FILE="${4-$ERR_FILE}"
@@ -157,15 +157,14 @@ else
             exit 1
         fi
     fi
-    echo $MYSQL_CMDLINE
-     # Node is ready.
-     # Shell return-code is 0
-     echo -en "HTTP/1.1 200 OK\r\n"
-     echo -en "Content-Type: text/plain\r\n"
-     echo -en "Connection: close\r\n"
-     echo -en "Content-Length: 40\r\n"
-     echo -en "\r\n"
-     echo -en "MySQL server is ready.\r\n"
-     sleep 0.1
-     exit 0
+    # Node is ready.
+    # Shell return-code is 0
+    echo -en "HTTP/1.1 200 OK\r\n"
+    echo -en "Content-Type: text/plain\r\n"
+    echo -en "Connection: close\r\n"
+    echo -en "Content-Length: 40\r\n"
+    echo -en "\r\n"
+    echo -en "MySQL server is ready.\r\n"
+    sleep 0.1
+    exit 0
 fi
