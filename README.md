@@ -59,7 +59,7 @@ This setup will register a socket on TCP port 9200 and an associated instantiate
 
 First, create a clustercheckuser that will be doing the checks.
 
-    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY 'clustercheckpassword!'
+    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY '123@123Aa!'
 
 Copy the clustercheck from the repository to `/usr/bin` and make it executable. Then copy the `mysqlck.socket` and `mysqlchk@.service` files (under `systemd`) in the repository to `/usr/lib/systemd/system` and make them world-readable.
 
@@ -75,7 +75,7 @@ If you do not want to use the setup with xinetd, you can also execute `clusterch
 
 First, create a clustercheckuser that will be doing the checks.
 
-    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY 'clustercheckpassword!'
+    mysql> GRANT PROCESS ON *.* TO 'clustercheckuser'@'localhost' IDENTIFIED BY '123@123Aa!'
 
 Then, you can execute the script. In case of a synced node:
 
