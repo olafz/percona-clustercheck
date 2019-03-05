@@ -36,9 +36,8 @@ if [ -f /etc/sysconfig/clustercheck ]; then
 fi
 
 
-
-MYSQL_USERNAME="clustercheckuser"
-MYSQL_PASSWORD="123@123Aa"
+MYSQL_USERNAME="${1-clustercheckuser}"
+MYSQL_PASSWORD="${2-123@123Aa}"
 AVAILABLE_WHEN_DONOR=${AVAILABLE_WHEN_DONOR:-0}
 ERR_FILE="${ERR_FILE:-/dev/null}"
 AVAILABLE_WHEN_READONLY=${AVAILABLE_WHEN_READONLY:-1}
