@@ -52,6 +52,9 @@ fi
 if [[ -n "$MYSQL_PASSWORD" ]]; then
     EXTRA_ARGS="$EXTRA_ARGS --password=${MYSQL_PASSWORD}"
 fi
+if [[ -n "$MYSQL_HOST" ]]; then
+    EXTRA_ARGS="$EXTRA_ARGS --host=${MYSQL_HOST}"
+fi
 if [[ -r $DEFAULTS_EXTRA_FILE ]];then
     MYSQL_CMDLINE="mysql --defaults-extra-file=$DEFAULTS_EXTRA_FILE -nNE --connect-timeout=$TIMEOUT \
                     ${EXTRA_ARGS}"
